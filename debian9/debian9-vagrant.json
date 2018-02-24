@@ -1,0 +1,55 @@
+{
+    "builders": [{
+    "type": "virtualbox-iso",
+    "guest_os_type": "Debian_64",
+    "iso_urls": [
+        "file:///home/dtsomp/Downloads/debian-9.3.0-amd64-netinst.iso",
+        "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-9.3.0-amd64-netinst.iso"
+        ],
+    "iso_checksum": "db8ab7871bc2b7d456c4746e706fb5d3",
+    "iso_checksum_type": "md5",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_wait_timeout": "10000s",
+    "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+    "http_directory": "http",
+    "http_port_min": "9001",
+    "http_port_max": "9005",
+    "boot_wait": "4s",
+    "boot_command": [
+        "<esc><wait>",
+        "install ",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/debian9-preseed.cfg ",
+        "debian-installer=en_US locale=en_US.UTF-8 ",
+        "kbd-chooser/method=us keyboard-configuration/xkb-keymap=us ",
+        "netcfg/get_hostname=vagrant netcfg/get_domain=unassigned-domain ",
+        "<enter><wait>"
+    ],
+    "vboxmanage": [
+    [
+      "modifyvm",
+      "{{.Name}}",
+      "--memory",
+      "2048"
+    ],
+    [
+      "modifyvm",
+      "{{.Name}}",
+      "--cpus",
+      "4"
+    ]
+    ],
+    "virtualbox_version_file": ".vbox_version"
+  }],
+  "post-processors": [
+    "vagrant"
+    ],
+  "provisioners": [
+    {
+        "scripts": [
+            "scripts/setup-debian9.sh",
+            "scripts/vagrant-cleanup.sh"
+            ],
+        "type": "shell"
+    }]
+}
